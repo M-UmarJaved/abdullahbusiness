@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Management - Chaki & Cigarettes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <div class="brand-logo">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>Business Management</h1>
+                    <p class="tagline">Chaki & Cigarettes Management</p>
+                </div>
+            </div>
+            <nav class="navbar-nav">
+                <button class="nav-btn active" data-section="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-btn" data-section="chaki">
+                    <i class="fas fa-wheat-awn"></i>
+                    <span>Chaki</span>
+                </button>
+                <button class="nav-btn" data-section="cigarettes">
+                    <i class="fas fa-store"></i>
+                    <span>Cigarettes</span>
+                </button>
+                <button class="nav-btn" data-section="reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </button>
+                <button class="nav-btn" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </button>
+            </nav>
+            <div class="navbar-status">
+                <div class="sync-badge">
+                    <i class="fas fa-cloud" id="syncIcon"></i>
+                    <span id="syncStatus" class="sync-indicator">Offline</span>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-compass"></i> Quick Links</h3>
+                <a href="#" class="sidebar-link active" data-section="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="sidebar-link" data-section="chaki">
+                    <i class="fas fa-wheat-awn"></i>
+                    <span>Chaki Management</span>
+                </a>
+                <a href="#" class="sidebar-link" data-section="cigarettes">
+                    <i class="fas fa-store"></i>
+                    <span>Cigarette Sales</span>
+                </a>
+                <a href="#" class="sidebar-link" data-section="reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <h3><i class="fas fa-calendar-day"></i> Today's Summary</h3>
+                <div class="summary-card chaki-summary">
+                    <div class="summary-icon">
+                        <i class="fas fa-wheat-awn"></i>
+                    </div>
+                    <div class="summary-content">
+                        <p class="summary-label">Chaki Profit</p>
+                        <p class="summary-value" id="todayChakiProfit">Rs 0</p>
+                    </div>
+                </div>
+                <div class="summary-card cigarette-summary">
+                    <div class="summary-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="summary-content">
+                        <p class="summary-label">Cigarette Profit</p>
+                        <p class="summary-value" id="todayCigProfit">Rs 0</p>
+                    </div>
+                </div>
+                <div class="summary-card total-summary">
+                    <div class="summary-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="summary-content">
+                        <p class="summary-label">Total Profit</p>
+                        <p class="summary-value highlight" id="todayTotalProfit">Rs 0</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="section active">
+                <div class="section-header">
+                    <div class="header-content">
+                        <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+                        <p>Real-time business overview and performance metrics</p>
+                    </div>
+                    <button class="btn btn-icon" onclick="location.reload()">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+
+                <div class="metrics-row">
+                    <div class="metric-card gradient-blue">
+                        <div class="metric-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="metric-details">
+                            <p class="metric-label">Today's Profit</p>
+                            <h3 class="metric-value" id="dailyTotalProfit">Rs 0</h3>
+                            <span class="metric-change positive"><i class="fas fa-arrow-up"></i> Combined Business</span>
+                        </div>
+                    </div>
+                    <div class="metric-card gradient-green">
+                        <div class="metric-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="metric-details">
+                            <p class="metric-label">Monthly Profit</p>
+                            <h3 class="metric-value" id="monthlyProfit">Rs 0</h3>
+                            <span class="metric-change"><i class="fas fa-chart-line"></i> This Month</span>
+                        </div>
+                    </div>
+                    <div class="metric-card gradient-orange">
+                        <div class="metric-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="metric-details">
+                            <p class="metric-label">Outstanding</p>
+                            <h3 class="metric-value" id="outstandingTotal">Rs 0</h3>
+                            <span class="metric-change"><i class="fas fa-exclamation-circle"></i> Pending Payments</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Chaki Business Card -->
+                    <div class="card business-card">
+                        <div class="card-header">
+                            <div class="card-icon chaki-icon">
+                                <i class="fas fa-wheat-awn"></i>
+                            </div>
+                            <div class="card-title">
+                                <h3>Chaki Business</h3>
+                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Active</span>
+                            </div>
+                        </div>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Bags Crushed</span>
+                                    <span class="stat-value" id="dailyBags">0</span>
+                                </div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-weight"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Total Weight</span>
+                                    <span class="stat-value" id="dailyWeight">0 kg</span>
+                                </div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Electricity Cost</span>
+                                    <span class="stat-value" id="dailyElectro">Rs 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cigarette Business Card -->
+                    <div class="card business-card">
+                        <div class="card-header">
+                            <div class="card-icon cigarette-icon">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div class="card-title">
+                                <h3>Cigarette Sales</h3>
+                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Active</span>
+                            </div>
+                        </div>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-route"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Routes Visited</span>
+                                    <span class="stat-value" id="dailyRoutes">0</span>
+                                </div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Outers Sold</span>
+                                    <span class="stat-value" id="dailyOuters">0</span>
+                                </div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-rupee-sign"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Revenue</span>
+                                    <span class="stat-value" id="dailyRevenue">Rs 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Summary -->
+                    <div class="card summary-card-large">
+                        <div class="card-header">
+                            <h3><i class="fas fa-calendar-alt"></i> This Month</h3>
+                        </div>
+                        <div class="progress-stats">
+                            <div class="progress-stat">
+                                <div class="progress-header">
+                                    <span class="progress-label"><i class="fas fa-wheat-awn"></i> Chaki Profit</span>
+                                    <span class="progress-value" id="monthChakiProfit">Rs 0</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill chaki-progress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="progress-stat">
+                                <div class="progress-header">
+                                    <span class="progress-label"><i class="fas fa-store"></i> Cigarette Profit</span>
+                                    <span class="progress-value" id="monthCigProfit">Rs 0</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill cigarette-progress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="progress-stat highlight-stat">
+                                <div class="progress-header">
+                                    <span class="progress-label"><i class="fas fa-coins"></i> Total Profit</span>
+                                    <span class="progress-value" id="monthTotalProfit">Rs 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Outstanding Balances -->
+                    <div class="card warning-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Outstanding Balances</h3>
+                        </div>
+                        <div class="outstanding-list">
+                            <div class="outstanding-item">
+                                <div class="outstanding-icon">
+                                    <i class="fas fa-user-clock"></i>
+                                </div>
+                                <div class="outstanding-content">
+                                    <span class="outstanding-label">Customer Debt</span>
+                                    <span class="outstanding-value" id="customerDebt">Rs 0</span>
+                                </div>
+                            </div>
+                            <div class="outstanding-item">
+                                <div class="outstanding-icon">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div class="outstanding-content">
+                                    <span class="outstanding-label">Agency Owing</span>
+                                    <span class="outstanding-value" id="agencyOwing">Rs 0</span>
+                                </div>
+                            </div>
+                            <div class="outstanding-item">
+                                <div class="outstanding-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="outstanding-content">
+                                    <span class="outstanding-label">Worker Commission</span>
+                                    <span class="outstanding-value" id="workerOwing">Rs 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chaki Management Section -->
+            <section id="chaki-section" class="section">
+                <div class="section-header">
+                    <div class="header-content">
+                        <h2><i class="fas fa-wheat-awn"></i> Chaki Management</h2>
+                        <p>Record grain crushing transactions and monitor operations</p>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <!-- Add New Bag Form -->
+                    <div class="card">
+                        <h3><i class="fas fa-plus-circle"></i> Add New Bag</h3>
+                        <form id="chakiForm" class="form">
+                            <div class="form-group">
+                                <label>Customer Name</label>
+                                <input type="text" id="chakiCustomer" placeholder="Customer name" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Original Weight (kg)</label>
+                                    <input type="number" id="chakiOriginalWeight" placeholder="Weight" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Final Weight (kg)</label>
+                                    <input type="number" id="chakiFinalWeight" placeholder="Final weight" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Cleaning Required?</label>
+                                <select id="chakiCleaning">
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Cleaning Charge (Rs)</label>
+                                <input type="number" id="chakiCleaningCharge" placeholder="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Worker Assigned</label>
+                                <input type="text" id="chakiWorker" placeholder="Worker name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="chakiStatus">
+                                    <option value="Pending">Pending</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Bag Record</button>
+                        </form>
+                    </div>
+
+                    <!-- Electricity Readings -->
+                    <div class="card">
+                        <h3><i class="fas fa-bolt"></i> Electricity Meter</h3>
+                        <form id="electricityForm" class="form">
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" id="elecDate" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Morning Reading</label>
+                                    <input type="number" id="elecMorning" placeholder="Units" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Night Reading</label>
+                                    <input type="number" id="elecNight" placeholder="Units">
+                                </div>
+                            </div>
+                            <div class="metric">
+                                <span>Units Consumed</span>
+                                <span class="metric-value" id="elecUnits">0</span>
+                            </div>
+                            <div class="metric">
+                                <span>Daily Cost (Rs)</span>
+                                <span class="metric-value" id="elecCost">0</span>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Reading</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Recent Bags Table -->
+                <div class="card">
+                    <h3><i class="fas fa-history"></i> Recent Bags</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Weight (kg)</th>
+                                    <th>Worker</th>
+                                    <th>Status</th>
+                                    <th>Profit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="chakiBagsTable">
+                                <tr><td colspan="6">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cigarette Sales Section -->
+            <section id="cigarettes-section" class="section">
+                <div class="section-header">
+                    <div class="header-content">
+                        <h2><i class="fas fa-store"></i> Cigarette Sales</h2>
+                        <p>Manage routes, inventory, and salesmen performance</p>
+                    </div>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="sales">Daily Sales</button>
+                    <button class="tab-btn" data-tab="inventory">Stock</button>
+                    <button class="tab-btn" data-tab="salesman">Salesmen</button>
+                    <button class="tab-btn" data-tab="routes">Routes</button>
+                </div>
+
+                <!-- Daily Sales Tab -->
+                <div id="sales-tab" class="tab-content active">
+                    <div class="two-column">
+                        <div class="card">
+                            <h3><i class="fas fa-cash-register"></i> Record Daily Sale</h3>
+                            <form id="saleForm" class="form">
+                                <div class="form-group">
+                                    <label>Route Name</label>
+                                    <input type="text" id="saleRoute" placeholder="Market A, Highway B, etc." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Salesman Name</label>
+                                    <input type="text" id="saleSalesman" placeholder="Your name or salesman" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Opening Stock</label>
+                                        <input type="number" id="saleOpening" placeholder="Outers" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Sold</label>
+                                        <input type="number" id="saleSold" placeholder="Outers" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cash Collected (Rs)</label>
+                                    <input type="number" id="saleCash" placeholder="Amount" required>
+                                </div>
+                                <div class="metric">
+                                    <span>Profit</span>
+                                    <span class="metric-value" id="saleProfit">Rs 0</span>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Sale</button>
+                            </form>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-truck"></i> Agency Purchase</h3>
+                            <form id="agencyForm" class="form">
+                                <div class="form-group">
+                                    <label>Agency Name</label>
+                                    <input type="text" id="agencyName" placeholder="Agency name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Invoice Number</label>
+                                    <input type="text" id="agencyInvoice" placeholder="Invoice #" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Quantity (Outers)</label>
+                                        <input type="number" id="agencyQty" placeholder="Qty" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Cost Per Outer (Rs)</label>
+                                        <input type="number" id="agencyPrice" placeholder="Price" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Payment Status</label>
+                                    <select id="agencyPayment">
+                                        <option value="Paid">Paid</option>
+                                        <option value="Unpaid">Unpaid</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Record Purchase</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-receipt"></i> Recent Sales</h3>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Route</th>
+                                        <th>Salesman</th>
+                                        <th>Sold</th>
+                                        <th>Revenue</th>
+                                        <th>Profit</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesTable">
+                                    <tr><td colspan="6">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Tab -->
+                <div id="inventory-tab" class="tab-content">
+                    <div class="card">
+                        <h3><i class="fas fa-boxes"></i> Current Stock</h3>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Agency</th>
+                                        <th>Invoice</th>
+                                        <th>Received</th>
+                                        <th>Available</th>
+                                        <th>Cost</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventoryTable">
+                                    <tr><td colspan="6">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Salesman Tab -->
+                <div id="salesman-tab" class="tab-content">
+                    <div class="card">
+                        <h3><i class="fas fa-user-plus"></i> Add New Salesman</h3>
+                        <form id="salesmanForm" class="form">
+                            <div class="form-group">
+                                <label>Salesman Name</label>
+                                <input type="text" id="salesmanName" placeholder="Full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Commission Per Outer (Rs)</label>
+                                <input type="number" id="salesmanCommission" placeholder="Amount" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="salesmanStatus">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Salesman</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-trophy"></i> Salesman Performance</h3>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Commission Rate</th>
+                                        <th>Sold This Month</th>
+                                        <th>Commission Earned</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesmanTable">
+                                    <tr><td colspan="5">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Routes Tab -->
+                <div id="routes-tab" class="tab-content">
+                    <div class="card">
+                        <h3><i class="fas fa-map-marked-alt"></i> Route Performance</h3>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Route Name</th>
+                                        <th>Sales This Month</th>
+                                        <th>Profit</th>
+                                        <th>Rank</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="routesTable">
+                                    <tr><td colspan="4">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports-section" class="section">
+                <div class="section-header">
+                    <div class="header-content">
+                        <h2><i class="fas fa-chart-bar"></i> Reports & Analytics</h2>
+                        <p>Comprehensive business insights and performance summaries</p>
+                    </div>
+                </div>
+
+                <div class="three-column">
+                    <div class="card">
+                        <h3><i class="fas fa-calendar-day"></i> Daily Report</h3>
+                        <div class="metric">
+                            <span>Date</span>
+                            <span class="metric-value" id="reportDate">Today</span>
+                        </div>
+                        <div class="metric">
+                            <span>Chaki Bags</span>
+                            <span class="metric-value" id="reportBags">0</span>
+                        </div>
+                        <div class="metric">
+                            <span>Cigarette Routes</span>
+                            <span class="metric-value" id="reportRoutes">0</span>
+                        </div>
+                        <div class="metric">
+                            <span>Total Daily Profit</span>
+                            <span class="metric-value profit" id="reportDailyProfit">Rs 0</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-calendar-week"></i> Weekly Report</h3>
+                        <div class="metric">
+                            <span>Week Bags</span>
+                            <span class="metric-value" id="weekBags">0</span>
+                        </div>
+                        <div class="metric">
+                            <span>Week Routes</span>
+                            <span class="metric-value" id="weekRoutes">0</span>
+                        </div>
+                        <div class="metric">
+                            <span>Total Weight</span>
+                            <span class="metric-value" id="weekWeight">0 kg</span>
+                        </div>
+                        <div class="metric">
+                            <span>Weekly Profit</span>
+                            <span class="metric-value profit" id="weekProfit">Rs 0</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-calendar-alt"></i> Monthly Report</h3>
+                        <div class="metric">
+                            <span>Month</span>
+                            <span class="metric-value" id="reportMonth">Current</span>
+                        </div>
+                        <div class="metric">
+                            <span>Total Bags</span>
+                            <span class="metric-value" id="monthBags">0</span>
+                        </div>
+                        <div class="metric">
+                            <span>Total Weight</span>
+                            <span class="metric-value" id="monthWeight">0 kg</span>
+                        </div>
+                        <div class="metric">
+                            <span>Monthly Profit</span>
+                            <span class="metric-value profit" id="monthlyProfit">Rs 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outstanding Collections -->
+                <div class="card">
+                    <h3><i class="fas fa-file-invoice-dollar"></i> Outstanding Payments</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer/Shop</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Days Outstanding</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="outstandingTable">
+                                <tr><td colspan="5">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="section">
+                <div class="section-header">
+                    <div class="header-content">
+                        <h2><i class="fas fa-cog"></i> Settings</h2>
+                        <p>Configure business parameters and manage data</p>
+                    </div>
+                </div>
+
+                <div class="three-column">
+                    <div class="card">
+                        <h3><i class="fas fa-wheat-awn"></i> Chaki Settings</h3>
+                        <form id="settingsChakiForm" class="form">
+                            <div class="form-group">
+                                <label>Worker Commission (Rs per 40kg)</label>
+                                <input type="number" id="setWorkerCommission" value="50" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Electricity Rate (Rs per unit)</label>
+                                <input type="number" id="setElecRate" value="15" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Default Cleaning Cost (Rs)</label>
+                                <input type="number" id="setCleaningCost" value="50" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Chaki Settings</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-store"></i> Cigarette Settings</h3>
+                        <form id="settingsCigForm" class="form">
+                            <div class="form-group">
+                                <label>Agency Cost Per Outer (Rs)</label>
+                                <input type="number" id="setAgencyPrice" value="870" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Retail Price Per Outer (Rs)</label>
+                                <input type="number" id="setRetailPrice" value="900" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Wholesale Price Per Outer (Rs)</label>
+                                <input type="number" id="setWholeSalePrice" value="850" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Cigarette Settings</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-building"></i> Business Info</h3>
+                        <form id="settingsBusinessForm" class="form">
+                            <div class="form-group">
+                                <label>Business Name</label>
+                                <input type="text" id="setBusinessName" placeholder="Your business name">
+                            </div>
+                            <div class="form-group">
+                                <label>Owner Name</label>
+                                <input type="text" id="setOwnerName" placeholder="Your name">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="setPhone" placeholder="Contact number">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Business Info</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Data Management -->
+                <div class="card">
+                    <h3><i class="fas fa-database"></i> Data Management</h3>
+                    <div class="button-group">
+                        <button id="exportDataBtn" class="btn btn-secondary">📥 Export Data (Excel)</button>
+                        <button id="syncSheetsBtn" class="btn btn-secondary">🔄 Sync with Google Sheets</button>
+                        <button id="backupDataBtn" class="btn btn-secondary">💾 Backup Data</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Confirmation -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirm Action</h3>
+            <p id="confirmMessage"></p>
+            <div class="modal-buttons">
+                <button id="confirmYes" class="btn btn-primary">Yes</button>
+                <button id="confirmNo" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- JavaScript Files -->
+    <script src="app.js"></script>
+</body>
+</html>
