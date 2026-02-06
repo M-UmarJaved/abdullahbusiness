@@ -6,15 +6,17 @@
 // ============================================
 // FIREBASE CONFIGURATION
 // ============================================
-// Replace these with your Firebase credentials from Firebase Console
+// Firebase credentials configured for Abdullah Business
 
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCkIdN9ICre18xGBMU5vwneC84jYKmOgNU",
+    authDomain: "abdullahbusiness-41a7b.firebaseapp.com",
+    databaseURL: "https://abdullahbusiness-41a7b-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "abdullahbusiness-41a7b",
+    storageBucket: "abdullahbusiness-41a7b.firebasestorage.app",
+    messagingSenderId: "668025342176",
+    appId: "1:668025342176:web:f5724f8fcb86f5ca55a885",
+    measurementId: "G-7YWEMMN0WX"
 };
 
 // Initialize Firebase
@@ -26,8 +28,10 @@ try {
     db = firebase.database();
     isFirebaseReady = true;
     console.log('Firebase initialized successfully');
+    console.log('Database URL:', firebaseConfig.databaseURL);
 } catch (error) {
     console.warn('Firebase initialization failed - running in demo mode', error);
+    console.error('Error details:', error);
 }
 
 // ============================================
