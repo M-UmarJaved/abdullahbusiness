@@ -29,9 +29,41 @@ try {
     isFirebaseReady = true;
     console.log('Firebase initialized successfully');
     console.log('Database URL:', firebaseConfig.databaseURL);
+    
+    // Initialize database structure (creates top-level nodes if they don't exist)
+    initializeDatabaseStructure();
 } catch (error) {
     console.warn('Firebase initialization failed - running in demo mode', error);
     console.error('Error details:', error);
+}
+
+// ============================================
+// DATABASE STRUCTURE INITIALIZATION
+// ============================================
+
+function initializeDatabaseStructure() {
+    if (!isFirebaseReady) {
+        console.log('Skipping database structure initialization - Firebase not ready');
+        return;
+    }
+    
+    console.log('Checking database structure...');
+    
+    // Check if database nodes exist, create if needed
+    const nodes = ['chakiBags', 'cigarSales', 'agency', 'electricity', 'settings', 'salesmen'];
+    
+    nodes.forEach(node => {
+        db.ref(node).once('value', (snapshot) => {
+            if (!snapshot.exists()) {
+                // Node doesn't exist, create it with empty object
+                db.ref(node).set({})
+                    .then(() => console.log(`Created database node: ${node}`))
+                    .catch(err => console.error(`Error creating ${node}:`, err));
+            } else {
+                console.log(`Database node exists: ${node}`);
+            }
+        });
+    });
 }
 
 // ============================================
